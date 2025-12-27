@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مدرستي برو - الإدارة (Online)</title>
     
+    <link rel="manifest" href="manifest.json">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -40,13 +42,11 @@
         .nav-item { font-size: 1.5rem; color: #94a3b8; cursor: pointer; transition: 0.3s; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
         
-        /* تنسيقات الجدول الجديد */
         .grades-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         .grades-table th { background: #e0e7ff; color: var(--primary); padding: 10px; border: 1px solid #cbd5e1; }
         .grades-table td { padding: 8px; border: 1px solid #cbd5e1; text-align: center; background: white; color: #333; }
         .grades-table tr:nth-child(even) td { background: #f8fafc; }
         
-        /* تنسيق المرشد التربوي */
         .counselor-box { background: #fff1f2; border: 1px solid #fda4af; padding: 10px; border-radius: 8px; margin-top: 5px; color: #be123c; font-size: 0.9rem; }
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 20000; display: flex; justify-content: center; align-items: center; color: white; flex-direction: column; display: none; }
@@ -364,7 +364,6 @@
             hideLoading();
         };
 
-        // دالة إضافة حقل المرشد في شاشة الإضافة
         window.addCounselorField = function() {
             const val = document.getElementById('tempCounselorInput').value;
             if(!val) return;
@@ -386,7 +385,6 @@
             if(!name || !pass) return alert('البيانات ناقصة');
             if(isPasswordTaken(pass)) return alert('كلمة المرور مستخدمة');
 
-            // تجميع الدرجات
             let grades = [];
             const gradeDivs = document.getElementById('dynamicGradesContainer').children;
             for(let div of gradeDivs) {
@@ -397,7 +395,6 @@
                 if(sub) grades.push({ sub, month: month || "عام", val: val || "", note: note || "" });
             }
 
-            // تجميع بيانات المرشد التربوي
             let counselorNotes = [];
             const cDivs = document.getElementById('counselorContainer').children;
             for(let div of cDivs) {
@@ -424,7 +421,6 @@
                 window.appData.classes[clsIdx].section = section;
                 window.appData.classes[clsIdx].students.push(newStudent);
                 openClassDetails(clsIdx);
-                // تصفير حقول المرشد
                 document.getElementById('counselorContainer').innerHTML = '';
             } catch (e) {
                 alert("فشل الحفظ: " + e.message);
@@ -432,7 +428,6 @@
             hideLoading();
         };
 
-        // دالة إضافة حقل المرشد في شاشة التعديل (بروفايل)
         window.addCounselorToProfile = function() {
             const val = document.getElementById('profileCounselorInput').value;
             if(val) {
@@ -464,7 +459,6 @@
                 counselorNotes: []
             };
 
-            // تجميع الدرجات
             document.getElementById('profileGradesContainer').querySelectorAll('.grade-row-container').forEach((row) => {
                 updatedStudent.grades.push({ 
                     sub: row.querySelector('.edit-sub').value, 
@@ -474,7 +468,6 @@
                 });
             });
 
-            // تجميع المرشد
             document.getElementById('profileCounselorContainer').querySelectorAll('.edit-c-val').forEach(input => {
                 if(input.value) updatedStudent.counselorNotes.push(input.value);
             });
