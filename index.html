@@ -37,10 +37,13 @@
         .student-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         
         /* تصميم مجموعات المواد الجديد */
-        .subject-group-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
-        .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; }
-        .exam-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
-        .exam-row input { margin-bottom: 0; padding: 8px; font-size: 0.9rem; }
+        .subject-group-box { background: #fff; border: 2px solid #e0e7ff; border-radius: 16px; padding: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .subject-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; }
+        .subject-controls { display: flex; justify-content: space-between; align-items: center; }
+        .subject-name-input { font-size: 1.1rem !important; color: var(--primary) !important; border: 2px solid #e0e7ff !important; background: #f8fafc !important; }
+        
+        .exam-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #f1f5f9; padding: 8px; border-radius: 10px; }
+        .exam-row input { margin-bottom: 0; padding: 10px; font-size: 0.9rem; border: 1px solid #cbd5e1; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px; display: none; justify-content: space-around; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 100; }
         .nav-item { font-size: 1.5rem; color: #94a3b8; cursor: pointer; transition: 0.3s; }
@@ -163,11 +166,10 @@
                     <div style="flex:1"><label>السلوك</label><input type="text" id="studentBehavior" placeholder="جيد"></div>
                 </div>
 
-                <div style="background: #e0e7ff; padding: 10px; border-radius: 12px; margin-top:10px;">
-                    <label>إضافة مادة جديدة</label>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-small btn-secondary" style="width:100%;" onclick="addSubjectGroup()"><i class="fas fa-plus-circle"></i> إضافة مادة</button>
-                    </div>
+                <div style="background: #e0e7ff; padding: 15px; border-radius: 12px; margin-top:20px;">
+                    <label style="color: var(--primary); font-size: 1.1rem;"><i class="fas fa-book-open"></i> سجل المواد والدرجات</label>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">اضغط "إضافة مادة" لإنشاء مادة جديدة، ثم أضف الشهور والدرجات داخلها.</p>
+                    <button class="btn btn-secondary" onclick="addSubjectGroup()"><i class="fas fa-plus-circle"></i> إضافة مادة جديدة</button>
                 </div>
                 
                 <div id="dynamicGradesContainer" style="margin-top:15px;"></div>
@@ -199,9 +201,9 @@
                     <div style="flex:1"><label>السلوك</label><input type="text" id="editStudentBehavior"></div>
                 </div>
                 
-                <div style="background: #e0e7ff; padding: 10px; border-radius: 12px; margin: 15px 0;">
-                    <label>الدرجات والمواد:</label>
-                    <button class="btn btn-small" style="width:100%;" onclick="addSubjectGroupProfile()"><i class="fas fa-plus"></i> إضافة مادة جديدة</button>
+                <div style="background: #e0e7ff; padding: 15px; border-radius: 12px; margin: 20px 0;">
+                    <label style="color: var(--primary); font-size: 1.1rem;"><i class="fas fa-book-open"></i> الدرجات والمواد</label>
+                    <button class="btn btn-small" style="width:100%; margin-top: 10px;" onclick="addSubjectGroupProfile()"><i class="fas fa-plus"></i> إضافة مادة جديدة</button>
                 </div>
                 
                 <div id="profileGradesContainer"></div>
@@ -661,10 +663,13 @@
             div.className = 'subject-group-box';
             div.innerHTML = `
                 <div class="subject-header">
-                    <input type="text" class="subject-name-input" value="${subjectName}" placeholder="اسم المادة (مثال: اسلامية)" style="width:70%; margin:0; border:none; background:transparent!important; font-weight:bold; color:var(--primary);">
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn btn-small" onclick="addExamToGroup(this)" style="font-size:0.7rem;"><i class="fas fa-plus"></i> امتحان</button>
-                        <i class="fas fa-trash" style="color:#ef4444; cursor:pointer; padding:5px;" onclick="this.closest('.subject-group-box').remove()"></i>
+                    <input type="text" class="subject-name-input" value="${subjectName}" placeholder="اكتب اسم المادة (مثال: أحياء)" style="width:100%; border:none; background:transparent!important; font-weight:bold; color:var(--primary);">
+                    <div class="subject-controls">
+                        <small style="color:#64748b;">الامتحانات/الأشهر لهذه المادة:</small>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-small btn-secondary" onclick="addExamToGroup(this)" style="font-size:0.8rem; padding: 5px 10px;"><i class="fas fa-plus"></i> إضافة شهر/درجة</button>
+                            <button class="btn btn-small btn-red" onclick="this.closest('.subject-group-box').remove()" style="font-size:0.8rem; padding: 5px 10px;"><i class="fas fa-trash"></i> حذف المادة</button>
+                        </div>
                     </div>
                 </div>
                 <div class="exams-container"></div>
@@ -684,10 +689,10 @@
             const div = document.createElement('div');
             div.className = 'exam-row';
             div.innerHTML = `
-                <input type="text" class="month-inp" value="${month}" placeholder="الشهر" style="flex:1;">
-                <input type="number" class="grade-inp" value="${val}" placeholder="الدرجة" style="flex:1;">
-                <input type="text" class="note-inp" value="${note}" placeholder="ملاحظة" style="flex:1.5;">
-                <i class="fas fa-times" style="color:#cbd5e1; cursor:pointer; padding:5px;" onclick="this.parentElement.remove()"></i>
+                <input type="text" class="month-inp" value="${month}" placeholder="الشهر (الأول، نصف السنة..)" style="flex:1;">
+                <input type="number" class="grade-inp" value="${val}" placeholder="الدرجة" style="flex:0.6;">
+                <input type="text" class="note-inp" value="${note}" placeholder="ملاحظة (اختياري)" style="flex:1;">
+                <i class="fas fa-times" style="color:#ef4444; cursor:pointer; padding:5px;" onclick="this.parentElement.remove()" title="حذف هذا الشهر"></i>
             `;
             return div;
         }
