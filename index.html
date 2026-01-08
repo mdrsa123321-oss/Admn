@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -36,8 +35,13 @@
         .class-card { background: white; padding: 20px; border-radius: var(--radius); text-align: center; position: relative; cursor: pointer; }
         .class-icon { width: 50px; height: 50px; background: #e0e7ff; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 10px; }
         .student-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .grade-row-container { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
-        .grade-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* تصميم مجموعات المواد الجديد */
+        .subject-group-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; margin-bottom: 15px; }
+        .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; }
+        .exam-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
+        .exam-row input { margin-bottom: 0; padding: 8px; font-size: 0.9rem; }
+        
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px; display: none; justify-content: space-around; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 100; }
         .nav-item { font-size: 1.5rem; color: #94a3b8; cursor: pointer; transition: 0.3s; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
@@ -160,9 +164,12 @@
                 </div>
 
                 <div style="background: #e0e7ff; padding: 10px; border-radius: 12px; margin-top:10px;">
-                    <label>إضافة مادة</label>
-                    <div style="display:flex; gap:10px;"><input type="text" id="tempSubjectInput" placeholder="المادة"><button class="btn btn-small btn-secondary" onclick="addSubjectField()"><i class="fas fa-plus"></i></button></div>
+                    <label>إضافة مادة جديدة</label>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-small btn-secondary" style="width:100%;" onclick="addSubjectGroup()"><i class="fas fa-plus-circle"></i> إضافة مادة</button>
+                    </div>
                 </div>
+                
                 <div id="dynamicGradesContainer" style="margin-top:15px;"></div>
                 
                 <div style="background: #ffe4e6; padding: 10px; border-radius: 12px; margin-top:15px; border:1px solid #fda4af;">
@@ -193,9 +200,10 @@
                 </div>
                 
                 <div style="background: #e0e7ff; padding: 10px; border-radius: 12px; margin: 15px 0;">
-                    <label>مادة جديدة:</label>
-                    <div style="display:flex; gap:10px;"><input type="text" id="profileSubjectInput" placeholder="المادة..."><button class="btn btn-small" onclick="addSubjectToProfile()"><i class="fas fa-plus"></i></button></div>
+                    <label>الدرجات والمواد:</label>
+                    <button class="btn btn-small" style="width:100%;" onclick="addSubjectGroupProfile()"><i class="fas fa-plus"></i> إضافة مادة جديدة</button>
                 </div>
+                
                 <div id="profileGradesContainer"></div>
 
                 <div style="background: #ffe4e6; padding: 10px; border-radius: 12px; margin: 15px 0; border:1px solid #fda4af;">
@@ -386,14 +394,20 @@
             if(isPasswordTaken(pass)) return alert('كلمة المرور مستخدمة');
 
             let grades = [];
-            const gradeDivs = document.getElementById('dynamicGradesContainer').children;
-            for(let div of gradeDivs) {
-                const sub = div.querySelector('.sub-name-inp').value;
-                const month = div.querySelector('.month-inp').value;
-                const val = div.querySelector('.grade-inp').value;
-                const note = div.querySelector('.note-inp').value;
-                if(sub) grades.push({ sub, month: month || "عام", val: val || "", note: note || "" });
-            }
+            // تجميع الدرجات من نظام المجموعات الجديد
+            const groupDivs = document.getElementById('dynamicGradesContainer').querySelectorAll('.subject-group-box');
+            groupDivs.forEach(group => {
+                const subName = group.querySelector('.subject-name-input').value;
+                if(subName) {
+                    const rows = group.querySelectorAll('.exam-row');
+                    rows.forEach(row => {
+                        const month = row.querySelector('.month-inp').value;
+                        const val = row.querySelector('.grade-inp').value;
+                        const note = row.querySelector('.note-inp').value;
+                        grades.push({ sub: subName, month: month || "عام", val: val || "", note: note || "" });
+                    });
+                }
+            });
 
             let counselorNotes = [];
             const cDivs = document.getElementById('counselorContainer').children;
@@ -459,13 +473,19 @@
                 counselorNotes: []
             };
 
-            document.getElementById('profileGradesContainer').querySelectorAll('.grade-row-container').forEach((row) => {
-                updatedStudent.grades.push({ 
-                    sub: row.querySelector('.edit-sub').value, 
-                    month: row.querySelector('.edit-month').value, 
-                    val: row.querySelector('.edit-val').value,
-                    note: row.querySelector('.edit-note').value
-                });
+            // تجميع الدرجات من البروفايل (النظام الجديد)
+            const groupDivs = document.getElementById('profileGradesContainer').querySelectorAll('.subject-group-box');
+            groupDivs.forEach(group => {
+                const subName = group.querySelector('.subject-name-input').value;
+                if(subName) {
+                    const rows = group.querySelectorAll('.exam-row');
+                    rows.forEach(row => {
+                        const month = row.querySelector('.month-inp').value;
+                        const val = row.querySelector('.grade-inp').value;
+                        const note = row.querySelector('.note-inp').value;
+                        updatedStudent.grades.push({ sub: subName, month: month || "عام", val: val || "", note: note || "" });
+                    });
+                }
             });
 
             document.getElementById('profileCounselorContainer').querySelectorAll('.edit-c-val').forEach(input => {
@@ -556,7 +576,7 @@
             document.getElementById('studentAbsence').value = ''; 
             document.getElementById('studentBehavior').value = '';
             document.getElementById('dynamicGradesContainer').innerHTML = '';
-            document.getElementById('counselorContainer').innerHTML = ''; // تصفير المرشد
+            document.getElementById('counselorContainer').innerHTML = ''; 
             renderStudentsList(); showScreen('screen-details');
         };
 
@@ -585,12 +605,30 @@
             document.getElementById('editStudentPass').value = std.password; 
             document.getElementById('editStudentAbsence').value = std.absences || 0; 
             document.getElementById('editStudentBehavior').value = std.behavior || "";
-            document.getElementById('profileSubjectInput').value = '';
             document.getElementById('profileCounselorInput').value = '';
             
-            // تعبئة الدرجات
+            // تعبئة الدرجات (نظام التجميع)
             const container = document.getElementById('profileGradesContainer'); container.innerHTML = '';
-            std.grades.forEach((g) => { addGradeRowToProfile(g.sub, g.month, g.val, g.note); });
+            
+            // تجميع الدرجات حسب المادة
+            let grouped = {};
+            if(std.grades) {
+                std.grades.forEach(g => {
+                    if(!grouped[g.sub]) grouped[g.sub] = [];
+                    grouped[g.sub].push(g);
+                });
+            }
+
+            // إنشاء واجهة المواد
+            for(let subName in grouped) {
+                const groupDiv = createSubjectGroupElement(subName);
+                const examsContainer = groupDiv.querySelector('.exams-container');
+                grouped[subName].forEach(g => {
+                    const row = createExamRowElement(g.month, g.val, g.note);
+                    examsContainer.appendChild(row);
+                });
+                container.appendChild(groupDiv);
+            }
 
             // تعبئة المرشد
             const cContainer = document.getElementById('profileCounselorContainer'); cContainer.innerHTML = '';
@@ -601,28 +639,60 @@
             showScreen('screen-profile');
         };
 
-        window.addSubjectField = function() {
-            const subName = document.getElementById('tempSubjectInput').value;
-            if(!subName) return alert('اكتب اسم المادة أولاً');
+        // --- وظائف نظام المواد الجديد ---
+
+        // إضافة مجموعة مادة فارغة في صفحة إضافة طالب
+        window.addSubjectGroup = function() {
+            const container = document.getElementById('dynamicGradesContainer');
+            const el = createSubjectGroupElement();
+            container.appendChild(el);
+        }
+
+        // إضافة مجموعة مادة فارغة في صفحة البروفايل
+        window.addSubjectGroupProfile = function() {
+            const container = document.getElementById('profileGradesContainer');
+            const el = createSubjectGroupElement();
+            container.appendChild(el);
+        }
+
+        // إنشاء عنصر HTML لمجموعة المادة
+        function createSubjectGroupElement(subjectName = '') {
             const div = document.createElement('div');
-            div.className = 'grade-row-container';
-            div.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><input type="text" class="sub-name-inp" value="${subName}" style="border:none; background:transparent !important; font-weight:bold; color:var(--primary); padding:0; width:auto; margin:0;"><i class="fas fa-times" style="color:red; cursor:pointer;" onclick="this.parentElement.parentElement.remove()"></i></div><div class="grade-inputs-grid"><input type="text" class="month-inp" placeholder="الشهر"><input type="number" class="grade-inp" placeholder="الدرجة"></div><input type="text" class="note-inp" placeholder="ملاحظات..." style="margin-top:5px; border-style:dashed;">`;
-            document.getElementById('dynamicGradesContainer').appendChild(div);
-            document.getElementById('tempSubjectInput').value = '';
-        };
+            div.className = 'subject-group-box';
+            div.innerHTML = `
+                <div class="subject-header">
+                    <input type="text" class="subject-name-input" value="${subjectName}" placeholder="اسم المادة (مثال: اسلامية)" style="width:70%; margin:0; border:none; background:transparent!important; font-weight:bold; color:var(--primary);">
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn btn-small" onclick="addExamToGroup(this)" style="font-size:0.7rem;"><i class="fas fa-plus"></i> امتحان</button>
+                        <i class="fas fa-trash" style="color:#ef4444; cursor:pointer; padding:5px;" onclick="this.closest('.subject-group-box').remove()"></i>
+                    </div>
+                </div>
+                <div class="exams-container"></div>
+            `;
+            return div;
+        }
 
-        window.addSubjectToProfile = function() { 
-            const sub = document.getElementById('profileSubjectInput').value;
-            if(sub) { addGradeRowToProfile(sub, "", "", ""); document.getElementById('profileSubjectInput').value = ''; }
-        };
-
-        window.addGradeRowToProfile = function(sub, month, val, note) {
-            const container = document.getElementById('profileGradesContainer'); 
-            const row = document.createElement('div'); 
-            row.className = 'grade-row-container';
-            row.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><input type="text" class="edit-sub" value="${sub}" style="font-weight:bold; border:none; background:transparent!important; color:var(--primary); padding:0; width:auto;"><i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="this.parentElement.parentElement.remove()"></i></div><div class="grade-inputs-grid"><input type="text" class="edit-month" value="${month}" placeholder="الشهر"><input type="number" class="edit-val" value="${val}" placeholder="الدرجة"></div><input type="text" class="edit-note" value="${note || ''}" placeholder="ملاحظات..." style="margin-top:5px; border-style:dashed;">`;
+        // إضافة سطر امتحان داخل مجموعة
+        window.addExamToGroup = function(btn) {
+            const container = btn.closest('.subject-group-box').querySelector('.exams-container');
+            const row = createExamRowElement();
             container.appendChild(row);
-        };
+        }
+
+        // إنشاء عنصر HTML لسطر الامتحان
+        function createExamRowElement(month='', val='', note='') {
+            const div = document.createElement('div');
+            div.className = 'exam-row';
+            div.innerHTML = `
+                <input type="text" class="month-inp" value="${month}" placeholder="الشهر" style="flex:1;">
+                <input type="number" class="grade-inp" value="${val}" placeholder="الدرجة" style="flex:1;">
+                <input type="text" class="note-inp" value="${note}" placeholder="ملاحظة" style="flex:1.5;">
+                <i class="fas fa-times" style="color:#cbd5e1; cursor:pointer; padding:5px;" onclick="this.parentElement.remove()"></i>
+            `;
+            return div;
+        }
+
+        // --------------------------------
 
         window.searchStudents = function() {
             const query = document.getElementById('searchInput').value.toLowerCase();
